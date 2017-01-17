@@ -1,7 +1,7 @@
 #Uses python3
 
 import sys
-from queue import Queue
+from queue import Queue,PriorityQueue
 
 
 def Dijkstra(adj, s, t):
@@ -9,11 +9,23 @@ def Dijkstra(adj, s, t):
 	for vertex in adj:
 		dist[vertex] = sys.maxsize
 		prev[vertex] = None
+
 	dist[s] = 0
-	q = Queue()
-	
-	print(adj)
-	return -1
+	p = PriorityQueue() #initilize priority queue to hold visited nodes
+	p.put((dist[s],s))
+
+	while not p.empty():
+		curr_dist,curr = p.get()
+		for node in adj[curr]: #iterate over adjacent nodes:
+			if dist[node]>curr_dist+adj[curr][node]: #perform relaxation
+				dist[node] = curr_dist+adj[curr][node]
+				prev[node] = curr
+				p.put((dist[node],node))
+
+	if dist[t]==sys.maxsize:
+		return -1
+	else:
+		return dist[t]
 
 def NaivePaths(adj,s,t):
 	dist, prev = {},{}
@@ -53,7 +65,7 @@ if __name__ == '__main__':
 		cost[a - 1].append(w)
 		graph[a][b] = w
 	#s, t = data[0] - 1, data[1] - 1
-	#print(distance(adj, cost, s, t))
 	s, t = data[0], data[1]
-	#print(distance(graph, s, t))
-	print(NaivePaths(graph,s,t))
+	print(Dijkstra(graph,s,t))
+	#print("Naive {}".format(NaivePaths(graph,s,t)))
+	#print("Dijkstar {}".format(Dijkstra(graph,s,t)))
